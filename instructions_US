@@ -53,3 +53,4 @@ bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.
     In NekoRay, go to Profile -> Add profile from clipboard.
     Right-click on the new profile and select Start.
     Finally, set the global mode to TUN Mode (usually in the top-right corner).
+This instruction is incomplete, it's a regular home VPN.
