@@ -1,0 +1,55 @@
+1.Connect to Your Server:
+    Open MobaXterm.
+    Click Session in the top-left corner.
+    In the Remote host field, enter your server's IP address.
+    Ensure the port is 22 (the default SSH port).
+    Enter your username (usually root).
+    Click OK and enter your password when prompted (paste with Ctrl+V or right-click).
+2.Initial Server Setup:
+    After your first login, reboot the server by typing: reboot
+    Wait a minute, then reconnect using your SSH client.
+    The system may prompt you to upgrade. If so, run: do-release-upgrade
+    Confirm all prompts with y or by pressing Enter. This process can take up to 30 minutes.
+3.Harden SSH Access:
+    Change the default SSH port to enhance security. Run: sudo nano /etc/ssh/sshd_config
+    Find the line # Port 22. Remove the # and change 22 to a non-standard port (e.g., Port 2222). Warning: Avoid very common ports.
+    Save the file (Ctrl+O), then exit nano (Ctrl+X).
+    Restart the SSH service: sudo systemctl restart sshd
+    Crucial: Close your current session and open a new one in MobaXterm, this time specifying your new SSH port (e.g., 2222) in the port field. Do not close your old session until you confirm the new one works.
+4.Configure the Firewall (UFW):
+    Enable the firewall and allow your new SSH port: sudo ufw enable && sudo ufw allow 2222/tcp (Replace 2222 with your chosen port).
+    Verify the new connection works before closing the original session.
+5.Disable ICMP (Ping) Responses:
+    To improve stealth, configure the firewall to ignore ping requests: sudo nano /etc/ufw/before.rules
+    Find the sections # ok icmp codes for INPUT and # ok icmp code for FORWARD.
+    Within these blocks, change all ACCEPT policies for ICMP to DROP.
+    Save and exit the file.
+    Reload the firewall: sudo ufw disable && sudo ufw enable
+    Test: Open Command Prompt on your Windows PC and run ping your-server-ip. It should show "Request timed out."
+6.Install the 3x-ui Panel:
+    Find the latest installation command on the official GitHub page: https://github.com/MHSanaei/3x-ui
+    As of 2025-11-02, the command is:
+    bash
+bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+    If you see (venv) in your command prompt, run deactivate first.
+    Execute the installation script. It will ask for a port for the panel—choose one (e.g., 2053).
+    Upon completion, the terminal will display a green box with your login credentials (URL, username, password). Save this information securely.
+7.Access the 3x-ui Panel:
+    Allow the panel's port through the firewall: sudo ufw allow 2053/tcp
+    Open your web browser and go to http://your-server-ip:2053. Log in with the credentials from the previous step.
+8.Create a Reality Inbound:
+    In the 3x-ui panel, go to Inbounds and click Add Inbound.
+    Remark: Enter a descriptive name (e.g., "My-Reality-Config").
+    Protocol: Select vless.
+    Client Flow: Choose xtls-rprx-vision.
+    Port: Set a custom port (e.g., 1234). Remember to allow it in the firewall later (ufw allow 1234/tcp).
+    Reality Settings: Under Dest, you can change the default site (e.g., yahoo.com) to another like google.com or mozilla.org. Click Get New Cert.
+    Click Create.
+    Reload Firewall: Run sudo ufw disable && sudo ufw enable to apply the new port rule.
+9.Client Configuration (NekoRay / NekoBox):
+    PC: Download NekoRay, unzip it, and run the executable as Administrator. Select sing-box as the core.
+    Phone: Download NekoBox from your app store.
+    In the 3x-ui panel, find your newly created inbound and copy the configuration link.
+    In NekoRay, go to Profile -> Add profile from clipboard.
+    Right-click on the new profile and select Start.
+    Finally, set the global mode to TUN Mode (usually in the top-right corner).
